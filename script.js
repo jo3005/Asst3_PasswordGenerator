@@ -38,6 +38,13 @@ function createPassword(intchars=8,whatcharstr=""){
 function openCharsModal(){
     console.log("popup form time!");
     $('#getCharsModal').modal('show');
+    $('#getCharsModal').on("shown.bs.modal",function(){
+        var tempobj=document.getElementsByClassName("form-check-input");
+        console.log((tempobj));
+        for (i=0;i<tempobj.length;i++){
+            tempobj[i].checked=false;}
+        
+    });
 };
 
 // Takes the output of funWhatChars and builds the array/string that will be used for the random password generator
@@ -124,59 +131,58 @@ function writePassword(password) {
 
 
 function setDefaults(){
-
-    document.getElementsByClassName("form-check-input").checked===false;
-    document.getElementById("password").value="";
-    /* document.getElementById("lwrcase").checked==false;
+    console.log("Setting defaults.");
+    document.getElementById("password").value="Your secure password";
+    document.getElementById("lwrcase").checked==false;
     document.getElementById('uprcase').checked==false;
     document.getElementById('nums').checked==false;
-    document.getElementById('specchar').checked==false; */
+    document.getElementById('specchar').checked==false; 
 }
 
 
 // Add event listener to generate button
 
-    document.querySelector("#generate").addEventListener("click", function(){
-        var numdigits=getLength();
-        setDefaults();
-        numchars=numdigits;
-        //go to the next step
-        if (numdigits !== 0) {
-            openCharsModal();
-        } else user_quits=true;
-    });
+document.querySelector("#generate").addEventListener("click", function(){
+    var numdigits=getLength();
+    setDefaults();
+    numchars=numdigits;
+    //go to the next step
+    if (numdigits !== 0) {
+        openCharsModal();
+    } else user_quits=true;
+});
+
+
+$('#getCharsModal').on("hide.bs.modal",function(){
+    console.log("hiding modal");
     
+    selectionarray=[];
+    if(document.getElementById("lwrcase").checked==true){
+        //alert("you have selected lowercase");
+        selectionarray.push("l")};
+    if(document.getElementById('uprcase').checked==true){selectionarray.push("u")};
+    if(document.getElementById('nums').checked==true){selectionarray.push("n")};
+    if(document.getElementById('specchar').checked){selectionarray.push("s")};
     
-    $('#getCharsModal').on("hide.bs.modal",function(){
-        console.log("hiding modal");
-        
-        selectionarray=[];
-        if(document.getElementById("lwrcase").checked==true){
-            //alert("you have selected lowercase");
-            selectionarray.push("l")};
-        if(document.getElementById('uprcase').checked==true){selectionarray.push("u")};
-        if(document.getElementById('nums').checked==true){selectionarray.push("n")};
-        if(document.getElementById('specchar').checked){selectionarray.push("s")};
-        
-        console.log("selection array:"+ selectionarray);
+    console.log("selection array:"+ selectionarray);
 
-        
-    });
+    
+});
 
 
-    $('#getCharsModal').on("hidden.bs.modal",function(){
-        if(selectionarray.length<1){
-            alert("You did not select any sets of characters.  A password can not be created.");
-        };
-        
-        var tempstring=fnGetCharString(selectionarray);
+$('#getCharsModal').on("hidden.bs.modal",function(){
+    if(selectionarray.length<1){
+        alert("You did not select any sets of characters.  A password can not be created.");
+    };
+    
+    var tempstring=fnGetCharString(selectionarray);
 
-        console.log(tempstring);
-        if (tempstring !== ""){
-            var password=createPassword(numchars,tempstring);
-            writePassword(password);
-        };
-    });
+    console.log(tempstring);
+    if (tempstring !== ""){
+        var password=createPassword(numchars,tempstring);
+        writePassword(password);
+    };
+});
 
 
 // Add event listener to next button
