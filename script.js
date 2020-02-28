@@ -3,24 +3,28 @@ const strucase="ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 const strnums ="1234567890";
 const strspecchar=" !\"#$%&'()*+,-./:;<=>?@[\]^_`{|}~";
 
-var user_quits=false;
-
 // Assignment Code
 var strpassword="";
 var selectionarray=[];
 var whatcharstr = "";
 var numchars=0;
 
-function getLength(){
-    
-    var strchars = prompt("How long do you want your password to be (between 8 and 128 chars):", "8");
-    var intchars = parseInt(strchars);
-    
-    if ( intchars < 8  || intchars > 128 || intchars === undefined) {
-        txt = "User cancelled the prompt, or number is not in range.";
-        alert(txt);
+function getPasswordLength(){
+    var strchars = prompt("How long do you want your password to be (between 8 and 128 chars):", "12");
+    var intchars = parseInt(strchars,10);
+    var txt="";
+    console.log(intchars);
+    if (isNaN(strchars)) {
+        txt="Oops - you did not enter a valid number! Please start again.";
+        intchars= 0;
+    } else if (strchars == undefined) {
+        txt = "Cancelling password generation.";
+        intchars= 0;
+    } else if (intchars < 8  || intchars > 128) {
+        txt = "Number is not in range."; 
         intchars= 0;
     };
+    if(txt.length!==0){ alert(txt)} ;
     return intchars;
 };
 
@@ -37,16 +41,17 @@ function createPassword(intchars=8,whatcharstr=""){
 // open a modal form that allows the user to determine what characters are to be included in the password
 function openCharsModal(){
     console.log("popup form time!");
-    $('#getCharsModal').modal('show');
+
     $('#getCharsModal').on("shown.bs.modal",function(){
-        var tempobj=document.getElementsByClassName("form-check-input");
+        var tempobj=$(".form-check-input");
         console.log((tempobj));
         for (i=0;i<tempobj.length;i++){
-            tempobj[i].checked=false;
-        }
-        
+            tempobj[i].checked=false
+        };
     });
-    document.getElementById("nextbtn").disabled=true;
+    $('#getCharsModal').modal('show');
+    
+    $("#nextbtn").prop('disabled', true);
 };
 
 // Takes the output of funWhatChars and builds the array/string that will be used for the random password generator
@@ -58,53 +63,22 @@ function fnGetCharString(selectionarray=["l","u","n","s"]) {
     //repeat for how ever many types of characters in the inputchararray
     for (j=1;j<=4; j++){
         console.log ("j: " + j) ;
+    
         switch (selectionarray[j-1]){
             case "l": 
-                console.log("case 1");
-                if(fullcharstring==="") {
-                    console.log("empty string");
-                    fullcharstring=strlcase;
-                    console.log(fullcharstring);
-                } else {
-                    fullcharstring=fullcharstring + strlcase;
-                    console.log(fullcharstring);
-                };
-            break;
+                fullcharstring= fullcharstring + strlcase;
+                break;
             case "u": 
-                console.log("case 2");
-                if(fullcharstring==="") {
-                    console.log("empty string");
-                    fullcharstring=strucase;
-                    console.log(fullcharstring);
-                } else {
-                    fullcharstring=fullcharstring + strucase;
-                    console.log(fullcharstring);
-                };
-            break;
+                fullcharstring=fullcharstring + strucase;
+                break;
             case "n": 
-                console.log("case 3");
-                if(fullcharstring==="") {
-                    console.log("empty string");
-                    fullcharstring=strnums;
-                    console.log(fullcharstring);
-                } else {
-                    fullcharstring=fullcharstring +  strnums;
-                    console.log(fullcharstring);
-                };
-            break;
+                fullcharstring=fullcharstring +  strnums;
+                break;
             case "s": 
-                console.log("case 4");
-                if(fullcharstring==="") {
-                    console.log("empty string");
-                    fullcharstring=strspecchar;
-                    console.log(fullcharstring);
-                } else {
-                    fullcharstring=fullcharstring +  strspecchar;
-                    console.log(fullcharstring);
-                };
-            break;
+                fullcharstring=fullcharstring +  strspecchar;
+                break;
             default: fullcharstring; 
-            break;
+                break;
         };
     
     };
@@ -124,49 +98,48 @@ function getRandomChar(fullcharstring) {
 
 // Write password to the #password input
 function writePassword(password) {
-  //var password = generatePassword();
-  var passwordText = document.querySelector("#password");
-
-  passwordText.value = password;
-
+    var passwordText = $("#password");
+    console.log("writing password to screen:" + password);
+    passwordText.text(password);
 };
 
 
 function setDefaults(){
-    console.log("Setting defaults.");
-    document.getElementById("password").value="Your secure password";
-    document.getElementById("lwrcase").checked==false;
-    document.getElementById('uprcase').checked==false;
-    document.getElementById('nums').checked==false;
-    document.getElementById('specchar').checked==false; 
+    console.log("Setting defaults...");
+    $("#password").text(null);
+    $("#lwrcase").is("checked",false);
+    $("#uprcase").is("checked",false);
+    $("#nums").is("checked",false);
+    $("#specchar").is("checked",false);
+    
 }
 
-
-// Add event listener to generate button
-
-document.querySelector("#generate").addEventListener("click", function(){
-    var numdigits=getLength();
-    setDefaults();
-    numchars=numdigits;
-    //go to the next step
-    if (numdigits !== 0) {
-        openCharsModal();
-    } else user_quits=true;
-});
 
 function getSelectionArray(){
     var numselected=0;
     console.log("Getting selection array");
     selectionarray=[];
-    if(document.getElementById("lwrcase").checked==true){selectionarray.push("l")};
-    if(document.getElementById('uprcase').checked==true){selectionarray.push("u")};
-    if(document.getElementById('nums').checked==true){selectionarray.push("n")};
-    if(document.getElementById('specchar').checked){selectionarray.push("s")};
+
+    if($("#lwrcase").is(":checked",true)) {selectionarray.push("l")};
+    if($("#uprcase").is(":checked",true)) {selectionarray.push("u")};
+    if($("#nums").is(":checked",true)) {selectionarray.push("n")};
+    if($("#specchar").is(":checked",true)) {selectionarray.push("s")};
+
     numselected=selectionarray.length;
     return numselected;
 };
 
+// Add event listener to generate button
 
+$("#generate").on("click", function(){
+    var numdigits=getPasswordLength();
+    setDefaults();
+    numchars=numdigits;
+    //go to the next step
+    if (numdigits !== 0) {
+        openCharsModal();
+    };
+});
 
 $('#getCharsModal').on("hide.bs.modal",function(){
     console.log("hiding modal");
@@ -195,9 +168,9 @@ $('.form-check').on("click",function(){
     getSelectionArray();
     if (selectionarray.length>0){
         console.log("something selected");
-        document.getElementById("nextbtn").disabled=false;
+        $("#nextbtn").prop("disabled",false);
     } else {
         console.log("nothing selected");
-        document.getElementById("nextbtn").disabled=true;
+        $("#nextbtn").prop("disabled",true);
     };
 });
