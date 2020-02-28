@@ -42,9 +42,11 @@ function openCharsModal(){
         var tempobj=document.getElementsByClassName("form-check-input");
         console.log((tempobj));
         for (i=0;i<tempobj.length;i++){
-            tempobj[i].checked=false;}
+            tempobj[i].checked=false;
+        }
         
     });
+    document.getElementById("nextbtn").disabled=true;
 };
 
 // Takes the output of funWhatChars and builds the array/string that will be used for the random password generator
@@ -152,30 +154,34 @@ document.querySelector("#generate").addEventListener("click", function(){
     } else user_quits=true;
 });
 
-
-$('#getCharsModal').on("hide.bs.modal",function(){
-    console.log("hiding modal");
-    
+function getSelectionArray(){
+    var numselected=0;
+    console.log("Getting selection array");
     selectionarray=[];
-    if(document.getElementById("lwrcase").checked==true){
-        //alert("you have selected lowercase");
-        selectionarray.push("l")};
+    if(document.getElementById("lwrcase").checked==true){selectionarray.push("l")};
     if(document.getElementById('uprcase').checked==true){selectionarray.push("u")};
     if(document.getElementById('nums').checked==true){selectionarray.push("n")};
     if(document.getElementById('specchar').checked){selectionarray.push("s")};
-    
-    console.log("selection array:"+ selectionarray);
+    numselected=selectionarray.length;
+    return numselected;
+};
 
-    
+
+
+$('#getCharsModal').on("hide.bs.modal",function(){
+    console.log("hiding modal");
+    var numselected=getSelectionArray();
+    console.log("number of options selected: " + numselected);
 });
 
 
 $('#getCharsModal').on("hidden.bs.modal",function(){
-    if(selectionarray.length<1){
+    var curr_selection_array = selectionarray;
+    if(curr_selection_array.length<1){
         alert("You did not select any sets of characters.  A password can not be created.");
     };
     
-    var tempstring=fnGetCharString(selectionarray);
+    var tempstring=fnGetCharString(curr_selection_array);
 
     console.log(tempstring);
     if (tempstring !== ""){
@@ -185,4 +191,13 @@ $('#getCharsModal').on("hidden.bs.modal",function(){
 });
 
 
-// Add event listener to next button
+$('.form-check').on("click",function(){
+    getSelectionArray();
+    if (selectionarray.length>0){
+        console.log("something selected");
+        document.getElementById("nextbtn").disabled=false;
+    } else {
+        console.log("nothing selected");
+        document.getElementById("nextbtn").disabled=true;
+    };
+});
